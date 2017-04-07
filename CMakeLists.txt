@@ -72,10 +72,12 @@ src/Viewer.cc
 
 target_link_libraries(${PROJECT_NAME}
 ${OpenCV_LIBS}
+/opt/local/lib/libopencv_features2d.dylib
+/opt/local/lib/libopencv_nonfree.dylib
 ${EIGEN3_LIBS}
 ${Pangolin_LIBRARIES}
-${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
-${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
+${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.dylib
+${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.dylib
 )
 
 # Build examples
