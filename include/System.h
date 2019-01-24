@@ -21,6 +21,9 @@
 
 #ifndef SYSTEM_H
 #define SYSTEM_H
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include<string>
 #include<thread>
@@ -119,6 +122,8 @@ public:
     // Information from most recent processed frame
     // You can call this right after TrackMonocular (or stereo or RGBD)
     int GetTrackingState();
+    vector<KeyFrame*> GetKeyFrames() const;
+    Tracking* GetTracker() const;
     std::vector<MapPoint*> GetTrackedMapPoints();
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
 
