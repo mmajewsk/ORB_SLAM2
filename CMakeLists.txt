@@ -68,6 +68,8 @@ src/KeyFrameDatabase.cc
 src/Sim3Solver.cc
 src/Initializer.cc
 src/Viewer.cc
+src/Osmap.cpp
+src/osmap.pb.cc
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -77,6 +79,17 @@ ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
 )
+include(FindProtobuf)
+find_package(Protobuf REQUIRED)
+
+include_directories(
+${PROTOBUF_INCLUDE_DIR}
+)
+
+target_link_libraries(${PROJECT_NAME}
+${PROTOBUF_LIBRARIES}
+)
+
 
 # Build examples
 
