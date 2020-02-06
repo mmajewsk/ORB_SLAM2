@@ -23,6 +23,8 @@
 #include<algorithm>
 #include<fstream>
 #include<chrono>
+#include <thread>
+#include <unistd.h>
 
 #include<opencv2/core/core.hpp>
 
@@ -33,14 +35,28 @@ using namespace std;
 void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageFilenamesRGB,
                 vector<string> &vstrImageFilenamesD, vector<double> &vTimestamps);
 
-int main(int argc, char **argv)
+int runner(ORB_SLAM2::System *SLAM);
+
+char **argv;
+
+int main(int argc, char **targv)
 {
     if(argc != 5)
     {
         cerr << endl << "Usage: ./rgbd_tum path_to_vocabulary path_to_settings path_to_sequence path_to_association" << endl;
         return 1;
     }
+    argv = targv;
 
+    // Create SLAM system. It initializes all system threads and gets ready to process frames.
+    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::RGBD,true);
+    
+    // refactor the other thread to be the runner
+    new thread(&runner, &SLAM);
+    SLAM.mpViewer->Run();
+}
+
+int runner(ORB_SLAM2::System *SLAM) {
     // Retrieve paths to images
     vector<string> vstrImageFilenamesRGB;
     vector<string> vstrImageFilenamesD;
@@ -60,9 +76,6 @@ int main(int argc, char **argv)
         cerr << endl << "Different number of images for rgb and depth." << endl;
         return 1;
     }
-
-    // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::RGBD,true);
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
@@ -95,7 +108,7 @@ int main(int argc, char **argv)
 #endif
 
         // Pass the image to the SLAM system
-        SLAM.TrackRGBD(imRGB,imD,tframe);
+        SLAM->TrackRGBD(imRGB,imD,tframe);
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -116,10 +129,12 @@ int main(int argc, char **argv)
 
         if(ttrack<T)
             usleep((T-ttrack)*1e6);
+
+        //SLAM.mViewer.Run();
     }
 
     // Stop all threads
-    SLAM.Shutdown();
+    SLAM->Shutdown();
 
     // Tracking time statistics
     sort(vTimesTrack.begin(),vTimesTrack.end());
@@ -133,8 +148,8 @@ int main(int argc, char **argv)
     cout << "mean tracking time: " << totaltime/nImages << endl;
 
     // Save camera trajectory
-    SLAM.SaveTrajectoryTUM("CameraTrajectory.txt");
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");   
+    SLAM->SaveTrajectoryTUM("CameraTrajectory.txt");
+    SLAM->SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");   
 
     return 0;
 }
