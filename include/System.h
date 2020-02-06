@@ -127,6 +127,9 @@ public:
     std::vector<MapPoint*> GetTrackedMapPoints();
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
 
+    // The viewer draws the map and the current camera pose. It uses Pangolin.
+    Viewer* mpViewer;
+
 
     // Input sensor
     eSensor mSensor;
@@ -152,9 +155,6 @@ public:
     // a pose graph optimization and full bundle adjustment (in a new thread) afterwards.
     LoopClosing* mpLoopCloser;
 
-    // The viewer draws the map and the current camera pose. It uses Pangolin.
-    Viewer* mpViewer;
-
     FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;
 
@@ -178,6 +178,7 @@ public:
     std::vector<MapPoint*> mTrackedMapPoints;
     std::vector<cv::KeyPoint> mTrackedKeyPointsUn;
     std::mutex mMutexState;
+
 };
 
 }// namespace ORB_SLAM
